@@ -12,6 +12,7 @@ then run from the project root:
 ```powershell
 python -m pip install -r src/training/environment/requirements.txt
 python -m pip install -e ".[submit,dev]"
+Copy-Item .env.example .env
 python -m pytest
 ```
 
@@ -21,7 +22,8 @@ Update the project name/description in pyproject.toml when reusing this template
 
 ## Kaggle access
 
-Create a local `.env` containing your Kaggle credentials:
+Copy `.env.example` to `.env`, then replace its example values with your
+Kaggle credentials:
 
 ```dotenv
 KAGGLE_API_TOKEN=your-token-from-kaggle
@@ -187,14 +189,41 @@ setup, with internet enabled when permitted or dependency wheels attached for of
 Direct dependencies are pinned for Python 3.11/3.12; transitive dependencies are not locked.
 
 Local tools include pytest, Ruff and pre-commit. Git hooks are not configured.
+Run the complete local checks with:
+
+```powershell
+python -m ruff check .
+python -m ruff format --check .
+python -m mypy src
+python -m pytest
+```
+
 For Windows corporate certificate issues, the local fix previously used was
 python -m pip install pip-system-certs==5.3; see
 [pip-system-certs documentation](https://pypi.org/project/pip-system-certs/).
+
+## Start a new Kaggle project
+
+When creating a project from this template:
+
+1. Update the project name and description in `pyproject.toml`.
+2. Set the kernel identity, title, compute options and attached sources in
+   `src/training/environment/kernel-metadata.json`.
+3. Replace the IEEE-CIS settings in `src/training/job/cfg/training.yaml`.
+4. Replace the example logic in `data_process.py`, `fit.py` and `score.py`.
+5. Update the synthetic tests to describe the new data and expected artefacts.
+6. Copy `.env.example` to `.env` and add your own Kaggle credentials.
+7. Run locally on a small sample, then use `training-submit prepare` to inspect
+   the generated Kaggle package before submitting it.
+
+See [the component guide](docs/docs.md) for the execution flow, configuration
+precedence and the responsibilities of each module.
 
 ## Project structure
 
 ```text
 README.md
+.env.example
 pyproject.toml
 docs/docs.md
 src/training/
@@ -254,7 +283,7 @@ python -m training.main submit --submit-predictions --competition ieee-fraud-det
 The competition defaults to the single attached competition and must match
 competition in job/cfg/training.yaml. If --nodes is explicitly provided, it must
 include score. Outputs for this workflow must be under /kaggle/working so Kaggle
-retains them. A mismatched run artifact causes an error rather than submitting
+retains them. A mismatched run artefact causes an error rather than submitting
 an older prediction file; avoid concurrent runs using the same kernel ID.
 
 Competition eligibility, deadlines and submission limits still apply. Generating
