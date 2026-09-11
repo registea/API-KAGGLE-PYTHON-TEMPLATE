@@ -5,7 +5,7 @@ Shared pipeline options for local execution and remote submission.
 import argparse
 from pathlib import Path
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Pipeline command-line arguments
 
 
@@ -20,7 +20,7 @@ def add_pipeline_arguments(parser: argparse.ArgumentParser) -> None:
 
     :return: None.
     """
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Register node selection and artifact overrides
 
     # Select complete nodes while keeping dependency ordering inside execute.py
@@ -33,6 +33,7 @@ def add_pipeline_arguments(parser: argparse.ArgumentParser) -> None:
             "Dependencies always run first."
         ),
     )
+
     # Allow each pipeline artifact path to be overridden for partial runs
     parser.add_argument(
         "--input-dir",
@@ -52,6 +53,7 @@ def add_pipeline_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--model-path", type=Path, help="Saved model for a score-only run."
     )
+
     # Inject a hidden run identifier so downloaded artifacts can be verified
     parser.add_argument("--run-id", help=argparse.SUPPRESS)
     parser.add_argument(
@@ -70,16 +72,16 @@ def pipeline_argv(options: argparse.Namespace) -> list[str]:
 
     :return: Command-line tokens embedded in the generated Kaggle script.
     """
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Serialise remote pipeline arguments
 
-    # Forward only shared pipeline options; launcher credentials stay in the
-    # local environment.
+    # Forward only shared pipeline options; launcher credentials stay in the local environment.
     arguments = []
 
     # Preserve the complete node selection as one multi-value option
     if options.nodes is not None:
         arguments.extend(["--nodes", *options.nodes])
+
     # Forward each explicitly supplied artifact or row-limit override
     for name in (
         "input_dir",
@@ -90,8 +92,8 @@ def pipeline_argv(options: argparse.Namespace) -> list[str]:
         "run_id",
     ):
         value = getattr(options, name)
-        # Zero is a valid row limit override, so do not use a truthiness check
-        # here.
+
+        # Zero is a valid row limit override, so do not use a truthiness check here.
         if value is not None:
             arguments.extend(
                 [

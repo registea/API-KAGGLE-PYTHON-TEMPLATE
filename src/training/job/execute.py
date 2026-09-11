@@ -5,7 +5,7 @@ Route the selected nodes.
 import argparse
 from pathlib import Path
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Import Local Functionality
 
 from training.job.utils.arguments import add_pipeline_arguments
@@ -47,7 +47,7 @@ def main(argv: list[str] | None = None) -> None:
 
     :return: None.
     """
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Load configuration and resolve pipeline switches
 
     # Configure objects
@@ -55,11 +55,10 @@ def main(argv: list[str] | None = None) -> None:
     options = get_options(argv)
     config = get_config(options.config_path)
 
-    # Determine whether to pull the nodes from config or override with script
-    # args
+    # Determine whether to pull the nodes from config or override with script args
     nodes = options.nodes if options.nodes is not None else config["nodes"]
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Defensive checks
 
     # Ensure a valid set of nodes have been passed
@@ -76,8 +75,7 @@ def main(argv: list[str] | None = None) -> None:
     if len(nodes) != len(set(nodes)):
         raise ValueError("Each pipeline node can only be selected once.")
 
-    # Ensure only processing or using previously processed data - Both are not
-    # permitted
+    # Ensure only processing or using previously processed data - Both are not permitted
     if options.processed_data is not None and "data_process" in nodes:
         raise ValueError(
             "--processed-data is for fit-only runs; omit it when "
@@ -91,7 +89,7 @@ def main(argv: list[str] | None = None) -> None:
             "fitting a new model."
         )
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Extract parameters
 
     # Pull directories
@@ -114,7 +112,7 @@ def main(argv: list[str] | None = None) -> None:
         raise ValueError("--max-rows must be zero or positive.")
     max_rows = max_rows or None
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Data processing node
 
     if "data_process" in nodes:
@@ -126,7 +124,7 @@ def main(argv: list[str] | None = None) -> None:
             input_dir, output_dir, config, max_rows=max_rows
         )
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Model fitting node
 
     if "fit" in nodes:
@@ -136,7 +134,7 @@ def main(argv: list[str] | None = None) -> None:
         logger.info("Starting node: fit")
         model_path = fit_model(processed_data, output_dir, config)
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Test-set scoring node
 
     if "score" in nodes:
@@ -151,7 +149,7 @@ def main(argv: list[str] | None = None) -> None:
     logger.info("Selected pipeline nodes completed.")
 
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Script entry point
 
 if __name__ == "__main__":

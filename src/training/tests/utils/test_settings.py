@@ -8,13 +8,13 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Import Local Functionality
 
 from training.utils.settings import Settings
 
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Environment settings tests
 
 
@@ -24,7 +24,7 @@ class SettingsTests(unittest.TestCase):
     """
 
     def test_local_dotenv_reaches_child_environment(self):
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Load a synthetic token without accessing user credentials
 
         """
@@ -43,7 +43,7 @@ class SettingsTests(unittest.TestCase):
             self.assertEqual(os.environ["KAGGLE_API_TOKEN"], "test-only-token")
 
     def test_shell_values_take_precedence(self):
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Keep credentials supplied by the caller
 
         """
@@ -61,7 +61,7 @@ class SettingsTests(unittest.TestCase):
                 self.assertEqual(os.environ["KAGGLE_API_TOKEN"], "shell-token")
 
     def test_build_agent_skips_dotenv(self):
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Exercise both DevOps detection and generic CI detection
 
         """
@@ -81,7 +81,7 @@ class SettingsTests(unittest.TestCase):
                         settings.validate_authentication()
 
     def test_prepare_settings_do_not_require_credentials(self):
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Local preparation remains possible before credentials are configured
 
         """

@@ -8,7 +8,7 @@ from typing import Any
 import yaml
 
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Configuration loading
 
 
@@ -16,14 +16,14 @@ def get_config(config_path: str | Path) -> dict[str, Any]:
     """
     Load a JSON or YAML configuration mapping.
 
-    Select JSON by its file extension and otherwise parse YAML. Reject
-    non-mapping roots so callers can access configuration by key.
+    Select JSON by its file extension and otherwise parse YAML. Reject non-mapping roots so callers can access
+    configuration by key.
 
     :param config_path: Path to the configuration file.
 
     :return: Dictionary containing the configuration values.
     """
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Read configuration from disk
 
     # Normalise string inputs before selecting the parser from the file suffix
@@ -41,7 +41,7 @@ def get_config(config_path: str | Path) -> dict[str, Any]:
         except yaml.YAMLError as exc:
             raise ValueError(f"Invalid YAML configuration: {path}") from exc
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Validate the parsed configuration
 
     # Fail early when the file does not describe named configuration settings

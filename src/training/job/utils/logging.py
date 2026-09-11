@@ -6,7 +6,7 @@ import logging
 import sys
 
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Logger configuration
 
 LOG_FORMAT = (
@@ -19,13 +19,12 @@ def setup_logger() -> logging.Logger:
     """
     Configure and return the shared project logger.
 
-    Reuse the project handler on repeated calls while preserving existing
-    handlers.
+    Reuse the project handler on repeated calls while preserving existing handlers.
 
     :return: Project logger configured to write formatted messages to standard
     output.
     """
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Set up the project logger
 
     # Use one named logger for messages from every pipeline module
@@ -33,7 +32,7 @@ def setup_logger() -> logging.Logger:
     logger.setLevel(logging.INFO)
     logger.propagate = False
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Install the project stream handler once
 
     # Add our handler once, preserving any handlers installed by callers

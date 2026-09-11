@@ -8,7 +8,7 @@ from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Import Local Functionality
 
 from training.main import get_options, main
@@ -16,7 +16,7 @@ from training.utils.metadata import resolve_metadata
 from training.utils.settings import Settings
 
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Metadata and launcher tests
 
 
@@ -159,7 +159,7 @@ class MetadataTests(unittest.TestCase):
                             run.assert_not_called()
 
     def test_prepare_needs_no_credentials_and_preserves_source_metadata(self):
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Prepare in a temporary checkout without reading real credentials
 
         """

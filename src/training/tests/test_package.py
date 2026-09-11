@@ -10,13 +10,13 @@ import sys
 import tempfile
 import unittest
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Import Local Functionality
 
 from training.utils.package import prepare_kernel
 
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Remote packaging tests
 
 
@@ -62,7 +62,7 @@ class PackagingTests(unittest.TestCase):
                 ],
             )
 
-            # ------------------------------------------------------------------
+            # ----------------------------------------------------------------------------------------------------------
             # Execute without importing the original project checkout
 
             result = subprocess.run(
@@ -73,7 +73,7 @@ class PackagingTests(unittest.TestCase):
                 check=True,
             )
 
-            # ------------------------------------------------------------------
+            # ----------------------------------------------------------------------------------------------------------
             # Verify configuration, output and source exclusions
 
             self.assertIn("Selected pipeline nodes completed.", result.stdout)
@@ -90,7 +90,7 @@ class PackagingTests(unittest.TestCase):
             self.assertIn("job/utils/logging.py", script)
 
     def test_custom_build_directory(self):
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Verify the configured build destination is respected
 
         """
@@ -103,7 +103,7 @@ class PackagingTests(unittest.TestCase):
             self.assertTrue((destination / "run.py").is_file())
 
     def test_missing_entry_point_is_rejected(self):
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Reject a project without executable remote source
 
         """

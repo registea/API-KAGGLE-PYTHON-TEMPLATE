@@ -6,14 +6,14 @@ from pathlib import Path
 import tempfile
 import unittest
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Import Local Functionality
 
 from training.job.utils.logging import setup_logger
 from training.job.utils.utils import get_config
 
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Shared helper tests
 
 
@@ -23,7 +23,7 @@ class HelperTests(unittest.TestCase):
     """
 
     def test_yaml_and_json_configuration(self):
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Verify equivalent YAML and JSON values
 
         """
@@ -41,7 +41,7 @@ class HelperTests(unittest.TestCase):
                 )
 
     def test_non_mapping_configuration_is_rejected(self):
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Reject configuration without named settings
 
         """
@@ -54,7 +54,7 @@ class HelperTests(unittest.TestCase):
                 get_config(path)
 
     def test_logger_setup_does_not_duplicate_handlers(self):
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Preserve handler count when the logger is requested again
 
         """

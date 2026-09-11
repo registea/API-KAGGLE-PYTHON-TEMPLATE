@@ -9,7 +9,7 @@ import joblib
 import numpy as np
 import pandas as pd
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Import Local Functionality
 
 from training.job.utils.logging import setup_logger
@@ -25,46 +25,39 @@ def run(
     """
     Score the complete test set using the saved model.
 
-    Load only required predictors, align probabilities with the sample
-    submission and save a manifest that identifies and checksums this run's CSV.
+    Load only required predictors, align probabilities with the sample submission and save a manifest that identifies
+    and checksums this run's CSV.
 
     :param model_path: Path to the model produced by the fitting node.
-    :param input_dir: Directory containing test inputs and the sample
-                      submission.
-    :param output_dir: Directory in which to save predictions and their
-                       manifest.
-    :param config: Competition configuration containing file names, join key and
-                   target.
-    :param run_id: Optional launcher identifier recorded for artifact
-                   verification.
+    :param input_dir: Directory containing test inputs and the sample submission.
+    :param output_dir: Directory in which to save predictions and their manifest.
+    :param config: Competition configuration containing file names, join key and target.
+    :param run_id: Optional launcher identifier recorded for artifact verification.
 
     :return: Path to submission.csv.
     """
     logger = setup_logger()
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Load model features and the test transaction identifiers
 
-    # Load an artifact produced by the fitting node, including its fitted
-    # preprocessing.
+    # Load an artifact produced by the fitting node, including its fitted preprocessing.
     model = joblib.load(model_path)
     features = list(model.feature_names_in_)
     key, target = config["join_key"], config["target_column"]
     transaction_path = input_dir / config["test_transaction_file"]
 
-    # Read the header first so transaction and identity predictors can be
-    # separated
+    # Read the header first so transaction and identity predictors can be separated
     headers = pd.read_csv(transaction_path, nrows=0).columns
     transaction_features = [
         feature for feature in features if feature in headers
     ]
 
-    # Scoring deliberately reads all test rows, regardless of the training row
-    # limit.
+    # Scoring deliberately reads all test rows, regardless of the training row limit.
     test = pd.read_csv(transaction_path, usecols=[key, *transaction_features])
     missing = [feature for feature in features if feature not in headers]
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Join identity predictors when the model requires them
 
     if missing:
@@ -76,8 +69,7 @@ def run(
             column.replace("id-", "id_"): column for column in identity_headers
         }
 
-        # Stop before scoring when a fitted predictor is absent from both test
-        # files
+        # Stop before scoring when a fitted predictor is absent from both test files
         if any(feature not in names for feature in missing):
             raise ValueError("Test inputs do not contain every fitted feature.")
 
@@ -95,11 +87,10 @@ def run(
             raise ValueError("Test identity keys must be unique and non-null.")
         test = test.merge(identity, on=key, how="left", validate="one_to_one")
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Score all test rows and align with the competition's sample submission
 
-    # Use the sample submission as the contract for column names and row
-    # ordering
+    # Use the sample submission as the contract for column names and row ordering
     sample = pd.read_csv(input_dir / config["sample_submission_file"])
     if list(sample.columns) != [key, target]:
         raise ValueError(
@@ -117,8 +108,7 @@ def run(
                 f"{name} identifiers must be non-empty, unique and non-null."
             )
 
-    # Require exactly the same identifiers even when the files use different
-    # orders
+    # Require exactly the same identifiers even when the files use different orders
     if set(test[key]) != set(sample[key]):
         raise ValueError("Test and sample submission identifiers differ.")
 
@@ -128,8 +118,7 @@ def run(
             "Model predictors must exclude the target and transaction ID."
         )
 
-    # Convert predictors consistently and leave missing values for the fitted
-    # imputer
+    # Convert predictors consistently and leave missing values for the fitted imputer
     values = (
         test[features]
         .apply(pd.to_numeric, errors="raise")
@@ -137,15 +126,13 @@ def run(
     )
     classes = list(model.classes_)
 
-    # Ensure the estimator exposes the positive class required by the
-    # competition
+    # Ensure the estimator exposes the positive class required by the competition
     if 1 not in classes:
         raise ValueError(
             "Model must provide probabilities for positive class 1."
         )
 
-    # Locate the positive class explicitly rather than assuming its probability
-    # column.
+    # Locate the positive class explicitly rather than assuming its probability column.
     probabilities = model.predict_proba(values)[:, classes.index(1)]
 
     # Reject invalid probabilities before creating a submission artifact
@@ -157,20 +144,18 @@ def run(
             "Predictions must be finite probabilities between zero and one."
         )
 
-    # Match by transaction ID so a different sample-submission order remains
-    # valid.
+    # Match by transaction ID so a different sample-submission order remains valid.
     predictions = pd.Series(probabilities, index=test[key])
     sample[target] = sample[key].map(predictions)
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Save predictions and proof identifying this job's output
 
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / "submission.csv"
     sample.to_csv(output_path, index=False)
 
-    # The local launcher uses this manifest to reject stale or altered
-    # downloads.
+    # The local launcher uses this manifest to reject stale or altered downloads.
     manifest = {
         "run_id": run_id,
         "competition": config["competition"],
@@ -183,4 +168,5 @@ def run(
         encoding="utf-8",
     )
     logger.info("Scored all %s test rows; saved %s", len(sample), output_path)
+
     return output_path
