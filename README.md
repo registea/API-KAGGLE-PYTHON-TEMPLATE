@@ -16,6 +16,10 @@ Copy-Item .env.example .env
 python -m pytest
 ```
 
+GitHub Actions runs formatting, linting, type-checking and tests on Python 3.11
+and 3.12 for pull requests and pushes to the main development branches. The
+workflow is defined in `.github/workflows/ci.yaml`.
+
 Alternatively, create and activate a virtual environment first.
 The editable install registers training-submit and training-run.
 Update the project name/description in pyproject.toml when reusing this template.
