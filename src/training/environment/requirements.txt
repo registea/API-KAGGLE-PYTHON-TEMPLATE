@@ -1,0 +1,36 @@
+# Common data science dependencies for the training template.
+# Exact direct-dependency pins; use Python 3.11 or 3.12 for this baseline.
+# This file is not installed automatically when submitting a Kaggle job.
+
+# ------------------------------------------------------------------------------------------------------------------
+# Configuration and environment variables
+
+PyYAML==6.0.2
+omegaconf==2.3.0
+python-dotenv==1.0.1
+
+# ------------------------------------------------------------------------------------------------------------------
+# Data manipulation and numerical computing
+
+numpy==1.26.4
+pandas==2.2.3
+
+# ------------------------------------------------------------------------------------------------------------------
+# Machine learning
+
+scikit-learn==1.6.1
+
+# ------------------------------------------------------------------------------------------------------------------
+# Columnar data and Parquet files (MLflow 2.20.1 requires PyArrow below 19)
+
+pyarrow==18.1.0
+
+# ------------------------------------------------------------------------------------------------------------------
+# Experiment tracking and model artifacts
+
+mlflow==2.20.1
+
+# ------------------------------------------------------------------------------------------------------------------
+# Local development tools (not needed by the remote Kaggle job)
+
+pre-commit==4.2.0

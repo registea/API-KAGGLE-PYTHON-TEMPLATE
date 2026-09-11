@@ -1,0 +1,16 @@
+# Default example: join competition data, then fit a one-feature classifier.
+nodes: [data_process, fit]
+input_dir: /kaggle/input/ieee-fraud-detection
+transaction_file: train_transaction.csv
+identity_file: train_identity.csv
+join_key: TransactionID
+target_column: isFraud
+competition: ieee-fraud-detection
+test_transaction_file: test_transaction.csv
+test_identity_file: test_identity.csv
+sample_submission_file: sample_submission.csv
+
+# Keep the first example run small. Use --max-rows 0 for all transactions.
+max_rows: 10000
+random_seed: 42
+test_size: 0.2

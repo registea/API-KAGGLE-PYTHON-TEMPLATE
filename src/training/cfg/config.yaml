@@ -1,0 +1,7 @@
+# Paths are relative to the project root, including when --config-path is used.
+environment:
+  metadata_path: src/training/environment/kernel-metadata.json
+
+submission:
+  build_path: build/kaggle
+  output_path: outputs
