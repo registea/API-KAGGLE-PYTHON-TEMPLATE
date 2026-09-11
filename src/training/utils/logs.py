@@ -2,14 +2,15 @@
 Stream Kaggle logs while hiding recognised notebook-rendering noise.
 """
 
+from collections.abc import Iterable, Iterator
 import os
 from pathlib import Path
 import re
 import subprocess
 import sys
-from collections.abc import Iterable, Iterator
 
-# ------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------
 # Known Kaggle rendering messages
 
 _RENDER_WARNING = re.compile(
@@ -34,28 +35,29 @@ def filter_logs(lines: Iterable[str]) -> Iterator[str]:
 
     :return: Iterator yielding retained lines unchanged.
     """
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Filter warning headers and their specific accompanying source lines
 
     # Track whether the next line can be the source excerpt for a known warning
     pending_source = False
     for line in lines:
         if pending_source:
-            # Suppress a source excerpt only immediately after its recognised
-            # warning.
+            # Suppress a source excerpt only immediately after its recognised warning.
             pending_source = False
             if line[:1].isspace() and line.strip().startswith(
                 ("cells[i][c] = re.sub(", "text = re.sub(")
             ):
                 continue
-        # A recognised warning may be followed by one indented library source
-        # line
+
+        # A recognised warning may be followed by one indented library source line
         if _RENDER_WARNING.match(line):
             pending_source = True
             continue
+
         # Hide Kaggle's HTML conversion progress while retaining job output
         if _RENDER_PROGRESS.match(line):
             continue
+
         yield line
 
 
@@ -63,8 +65,7 @@ def stream_logs(kernel_id: str, root: Path, raw: bool = False) -> None:
     """
     Forward Kaggle job logs to the local console.
 
-    Optionally filter known rendering noise and propagate CLI failures.
-    Interrupting the viewer stops the local process
+    Optionally filter known rendering noise and propagate CLI failures. Interrupting the viewer stops the local process
     without cancelling the remote job.
 
     :param kernel_id: Kaggle kernel identifier in owner/slug form.
@@ -73,11 +74,10 @@ def stream_logs(kernel_id: str, root: Path, raw: bool = False) -> None:
 
     :return: None.
     """
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Start the local log viewer with line-buffered Python output
 
-    # Build the command as tokens so the kernel identifier is never
-    # shell-interpreted
+    # Build the command as tokens so the kernel identifier is never shell-interpreted
     command = ["kaggle", "kernels", "logs", kernel_id, "--follow"]
     environment = dict(os.environ, PYTHONUNBUFFERED="1")
     process = subprocess.Popen(
@@ -92,23 +92,24 @@ def stream_logs(kernel_id: str, root: Path, raw: bool = False) -> None:
         bufsize=1,
     )
 
-    # --------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # Forward raw or filtered lines immediately
 
     try:
         assert process.stdout is not None
+
         # Raw mode remains available when platform diagnostics are needed
         lines = process.stdout if raw else filter_logs(process.stdout)
         for line in lines:
             sys.stdout.write(line)
             sys.stdout.flush()
         returncode = process.wait()
+
         # Surface viewer failures after all available output is forwarded
         if returncode:
             raise subprocess.CalledProcessError(returncode, command)
     finally:
-        # Stop only the local viewer when interrupted; never cancel the Kaggle
-        # job.
+        # Stop only the local viewer when interrupted; never cancel the Kaggle job.
         if process.poll() is None:
             process.terminate()
             try:

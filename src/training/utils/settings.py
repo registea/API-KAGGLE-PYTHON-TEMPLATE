@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 
 
-# ------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Environment settings
 
 
@@ -26,10 +26,8 @@ class Settings:
         project_root: Path | None = None,
     ):
         """
-        Load environment settings for the submission launcher.
-
-        Local dotenv values do not override existing environment variables.
-        Build agents use injected variables without loading the local file.
+        Load environment settings for the submission launcher.Local dotenv values do not override existing environment
+        variables. Build agents use injected variables without loading the local file.
 
         :param logger: Optional logger used to report the execution context.
         :param project_root: Repository root containing .env; defaults to the
@@ -37,7 +35,8 @@ class Settings:
 
         :return: None.
         """
-        # ----------------------------------------------------------------------
+
+        # --------------------------------------------------------------------------------------------------------------
         # Capture logging and execution context
 
         # Reuse the caller's logger so setup messages share a consistent format
@@ -45,17 +44,16 @@ class Settings:
             logger if logger is not None else logging.getLogger(__name__)
         )
         root = project_root if project_root is not None else Path.cwd()
-        # Detect both Azure DevOps and generic continuous-integration
-        # environments
+
+        # Detect both Azure DevOps and generic continuous-integration environments
         self.devops_run = bool(os.environ.get("BUILD_REASON"))
         ci_run = os.environ.get("CI", "").lower() in {"true", "1", "yes"}
         self.build_agent_run = self.devops_run or ci_run
 
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Load local settings or use build-agent variables
 
-        # Local runs may read .env; automated jobs must receive settings
-        # explicitly
+        # Local runs may read .env; automated jobs must receive settings explicitly
         if self.build_agent_run:
             self.logger.info(
                 "Running on build agent; using injected environment variables."
@@ -64,13 +62,12 @@ class Settings:
             self.logger.info(
                 "Running locally; loading environment variables from .env."
             )
-            # Existing shell/CI values take precedence over values in the local
-            # file.
+            # Existing shell/CI values take precedence over values in the local file.
             load_dotenv(
                 dotenv_path=root / ".env", override=False, interpolate=False
             )
 
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Capture non-secret submission identity
 
         # Never retain the API token on the settings object
@@ -87,11 +84,10 @@ class Settings:
 
         :return: None.
         """
-        # ----------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         # Check credentials without logging or placing them in command arguments
 
-        # Read the token only for validation and never include it in errors or
-        # logs
+        # Read the token only for validation and never include it in errors or logs
         token = os.environ.get("KAGGLE_API_TOKEN", "")
         placeholders = {
             "your-token",
@@ -99,6 +95,7 @@ class Settings:
             "your-kaggle-api-token",
             "your-token-from-kaggle",
         }
+
         # Treat template values and whitespace-containing tokens as unconfigured
         if (
             not token.strip()
